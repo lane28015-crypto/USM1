@@ -2,107 +2,47 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#101820">
-<title>Velocity GPS</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090909">
+<title>Velocity GPS — Roses Edition</title>
 <style>
-:root{--bg:#101820;--panel:#182631;--line:#2c414e;--accent:#4de1c1;--text:#f4f7f8;--muted:#a9bac3}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-header{padding:15px 16px 12px;background:#101820;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
-.brand{font-weight:850;font-size:20px;letter-spacing:.4px}.brand span{color:var(--accent)}.tag{font-size:11px;color:var(--muted)}
-#map{height:53vh;min-height:300px;width:100%;background:#263642}
-main{padding:12px;max-width:800px;margin:auto}.searchrow{display:flex;gap:8px;margin-bottom:8px}
-input{min-width:0;flex:1;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:13px;font-size:15px;outline:none}
-button{border:0;border-radius:12px;padding:12px 14px;background:var(--accent);color:#09201c;font-weight:800;font-size:14px;cursor:pointer}
-button.secondary{background:#263a46;color:var(--text);border:1px solid var(--line)}button:disabled{opacity:.45}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
-.status{padding:10px 12px;border:1px solid var(--line);background:var(--panel);border-radius:12px;color:var(--muted);font-size:13px;line-height:1.4}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
-.stat{background:var(--panel);border:1px solid var(--line);padding:11px;border-radius:12px;min-width:0}
-.stat small{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px}.stat strong{font-size:19px}
-footer{color:var(--muted);font-size:11px;line-height:1.45;padding:12px 2px}
-.leaflet-control-attribution{font-size:9px!important}
-@media(min-width:700px){#map{height:55vh}.layout{display:grid;grid-template-columns:1.4fr 1fr;gap:12px}#map{border-radius:14px}.panel{align-self:start}}
+:root{color-scheme:dark;--bg:#090909;--panel:#151112;--panel2:#201719;--red:#e3263f;--red2:#8e1024;--text:#fff4f5;--muted:#c0aeb1;--line:#49232b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top right,#351019 0,transparent 44%),var(--bg);color:var(--text);font:16px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+header{padding:calc(18px + env(safe-area-inset-top)) 18px 16px;border-bottom:1px solid var(--line);background:#090909dd;position:sticky;top:0;z-index:4;backdrop-filter:blur(14px)}
+.brand{display:flex;align-items:center;gap:12px}.rose{font-size:30px;filter:drop-shadow(0 0 9px #e3263f66)}h1{font-size:20px;letter-spacing:.4px;margin:0}.sub{font-size:12px;color:var(--muted);margin-top:3px}
+main{max-width:720px;margin:auto;padding:18px 15px 100px}.hero{border:1px solid var(--line);border-radius:24px;padding:22px;background:linear-gradient(140deg,#241116,#100d0e 68%);position:relative;overflow:hidden}.hero:after{content:"🌹";position:absolute;right:10px;bottom:-22px;font-size:100px;opacity:.14;transform:rotate(-18deg)}.eyebrow{font-size:11px;color:#ff8191;letter-spacing:2px;text-transform:uppercase}.hero h2{font-size:28px;line-height:1.1;margin:9px 0}.hero p{color:var(--muted);max-width:390px;line-height:1.5;font-size:14px}
+.tabs{position:fixed;z-index:5;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(3,1fr);padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:#100c0dee;border-top:1px solid var(--line);backdrop-filter:blur(15px)}.tab{border:0;background:transparent;color:var(--muted);padding:10px 4px;border-radius:13px;font:inherit;font-size:12px}.tab span{display:block;font-size:20px;margin-bottom:3px}.tab.active{background:#3a101a;color:#fff;box-shadow:inset 0 0 0 1px #7b2333}
+.panel{margin-top:16px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:18px}.panel h3{margin:0 0 8px;font-size:18px}.muted{color:var(--muted);font-size:13px;line-height:1.5}.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px 16px;margin-top:11px;background:var(--red);color:white;font-size:15px;font-weight:700;text-align:center;text-decoration:none;cursor:pointer}.btn.secondary{background:#29151a;border:1px solid #67303a}.field{width:100%;background:#0d0b0c;color:white;border:1px solid #55303a;border-radius:12px;padding:13px;font:inherit;margin-top:8px}.status{padding:12px;border-radius:12px;background:#100d0e;border:1px solid var(--line);color:#e8dadd;font-size:13px;overflow-wrap:anywhere;margin-top:10px}.view{display:none}.view.active{display:block}.music-controls{display:flex;gap:10px;align-items:center;margin-top:12px}.music-controls .btn{flex:1;margin:0}.small{font-size:12px;color:var(--muted);margin-top:9px}audio{width:100%;margin-top:14px}label.file{display:block;margin-top:10px;padding:13px;border:1px dashed #8c3545;border-radius:13px;text-align:center;color:#ffb2bc}input[type=file]{max-width:100%;margin-top:8px}
 </style>
 </head>
 <body>
-<header><div><div class="brand">VELOCITY <span>GPS</span></div><div class="tag">YOUR MAP. YOUR ROUTE.</div></div><div class="tag">BETA 0.1</div></header>
-<div id="map" aria-label="GPS map"></div>
+<header><div class="brand"><div class="rose">🌹</div><div><h1>Velocity GPS</h1><div class="sub">RED • BLACK • ROSES</div></div></div></header>
 <main>
-<div class="searchrow"><input id="destination" placeholder="Search a place or address" autocomplete="off"><button id="searchBtn">Find</button></div>
-<div class="actions"><button id="locateBtn">◎ My location</button><button id="routeBtn" class="secondary" disabled>↗ Route there</button></div>
-<div class="layout"><div class="panel">
-<div class="stats">
-<div class="stat"><small>Speed</small><strong id="speed">—</strong></div>
-<div class="stat"><small>Accuracy</small><strong id="accuracy">—</strong></div>
-<div class="stat"><small>Route</small><strong id="distance">—</strong></div>
-</div>
-<div id="status" class="status" role="status">Map ready. Tap “My location” and allow location access to test GPS.</div>
-</div><div class="panel"><footer><b>Prototype notes</b><br>Map data © OpenStreetMap contributors. Search uses OpenStreetMap Nominatim; routes use the public OSRM demo service. These public services have usage limits and are not a guaranteed production backend. GPS requires permission and a secure HTTPS page. Never use this prototype as your sole navigation source while driving.</footer></div></div>
+<section class="view active" id="home">
+<div class="hero"><div class="eyebrow">Find your way</div><h2>Your route.<br>Your rhythm.</h2><p>A simple phone-first GPS companion with a dark rose aesthetic, Google Maps directions, and your own music.</p></div>
+<div class="panel"><h3>📍 Quick navigation</h3><p class="muted">Use your phone's location, enter a destination, and open directions in Google Maps.</p><button class="btn" onclick="getLocation()">Use my current location</button><div class="status" id="locationStatus">Location hasn't been checked yet.</div><button class="btn secondary" onclick="showView('map')">Open map tools</button></div>
+<div class="panel"><h3>🎵 Your music</h3><p class="muted">Choose an audio file saved on your phone to play it here.</p><button class="btn secondary" onclick="showView('music')">Open music player</button></div>
+</section>
+<section class="view" id="map">
+<div class="panel"><h3>🗺️ Google Maps</h3><p class="muted">This uses your phone's browser location permission and opens the real Google Maps app or website for navigation. No Maps API key is needed for this handoff.</p><button class="btn" onclick="getLocation()">Get my location</button><div class="status" id="mapLocation">Location: not yet available.</div><label for="destination">Where do you want to go?</label><input class="field" id="destination" placeholder="Address, place, or business" autocomplete="street-address"><button class="btn" onclick="navigate()">Get directions in Google Maps</button><a class="btn secondary" href="https://maps.google.com" target="_blank" rel="noopener">Open Google Maps</a><p class="small">Location access works best over HTTPS and requires your permission. If location is unavailable, you can still search for a destination in Google Maps.</p></div>
+</section>
+<section class="view" id="music">
+<div class="panel"><h3>🎵 Music library</h3><p class="muted">Select music files stored on this phone. Files stay on your device; this page doesn't upload them.</p><label class="file">🌹 Choose audio from this phone<input id="audioFiles" type="file" accept="audio/*" multiple></label><select id="trackList" class="field" aria-label="Selected track"><option value="">Choose a track</option></select><audio id="player" controls preload="metadata"></audio><div class="music-controls"><button class="btn secondary" onclick="previousTrack()">Previous</button><button class="btn" onclick="playTrack()">Play</button><button class="btn secondary" onclick="nextTrack()">Next</button></div><div id="musicStatus" class="status">No local tracks selected yet.</div><p class="small">This is a local-file player, not a built-in Spotify or YouTube Music integration.</p></div>
+</section>
 </main>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<nav class="tabs" aria-label="Main navigation"><button class="tab active" data-view="home" onclick="showView('home')"><span>⌂</span>Home</button><button class="tab" data-view="map" onclick="showView('map')"><span>📍</span>Maps</button><button class="tab" data-view="music" onclick="showView('music')"><span>♫</span>Music</button></nav>
 <script>
-const $=id=>document.getElementById(id);
-const statusEl=$('status');
-const map=L.map('map').setView([39.0997,-94.5786],11);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map);
-let userMarker=null, destMarker=null, routeLine=null, userPos=null, destination=null, watchId=null, lastSpeed=0;
-function status(msg){statusEl.textContent=msg}
-function fmtDistance(m){return m>=1000?(m/1000).toFixed(1)+' km':Math.round(m)+' m'}
-function showPosition(p){
- userPos=[p.coords.latitude,p.coords.longitude];
- const acc=p.coords.accuracy;
- $('accuracy').textContent=acc?Math.round(acc)+' m':'—';
- const s=p.coords.speed;
- $('speed').textContent=(s!=null&&s>=0)?Math.round(s*3.6)+' km/h':'—';
- if(!userMarker){userMarker=L.circleMarker(userPos,{radius:9,color:'#ffffff',weight:3,fillColor:'#4de1c1',fillOpacity:1}).addTo(map).bindPopup('Your current location')}
- else userMarker.setLatLng(userPos);
- if(!destination) map.setView(userPos,16);
- status('GPS location updated. Accuracy about '+Math.round(acc)+' meters.');
-}
-function locate(){
- if(!navigator.geolocation){status('This browser does not support GPS location. Try Chrome on Android.');return}
- status('Requesting GPS permission…');
- navigator.geolocation.getCurrentPosition(p=>{showPosition(p);map.setView(userPos,16);userMarker.openPopup();
-  if(watchId===null){watchId=navigator.geolocation.watchPosition(showPosition,e=>status('GPS update issue: '+e.message),{enableHighAccuracy:true,maximumAge:3000,timeout:15000})}
- },e=>{status('Could not get location: '+e.message+'. Check browser location permission and make sure this page is served over HTTPS.')},{enableHighAccuracy:true,maximumAge:0,timeout:15000});
-}
-async function searchPlace(){
- const q=$('destination').value.trim();if(!q){status('Type a place or address first.');return}
- status('Searching OpenStreetMap…');
- try{
-  const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(q),{headers:{'Accept':'application/json'}});
-  if(!r.ok)throw new Error('Search service unavailable');
-  const data=await r.json();if(!data.length){status('No result found. Try a fuller address or nearby landmark.');return}
-  destination=[Number(data[0].lat),Number(data[0].lon)];
-  if(destMarker)map.removeLayer(destMarker);
-  destMarker=L.marker(destination).addTo(map).bindPopup(data[0].display_name);
-  map.setView(destination,14);destMarker.openPopup();$('routeBtn').disabled=false;
-  status('Found: '+data[0].display_name+'. Tap “Route there” to calculate a route.');
- }catch(e){status('Search failed: '+e.message+'. Check your internet connection and try again.')}
-}
-async function getRoute(){
- if(!userPos){status('Get your GPS location first.');return}
- if(!destination){status('Search for a destination first.');return}
- status('Calculating route…');
- try{
-  const coords=userPos[1]+','+userPos[0]+';'+destination[1]+','+destination[0];
-  const r=await fetch('https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson&steps=true');
-  if(!r.ok)throw new Error('Routing service unavailable');
-  const d=await r.json();if(!d.routes||!d.routes.length)throw new Error('No driving route found');
-  const rt=d.routes[0];
-  if(routeLine)map.removeLayer(routeLine);
-  routeLine=L.geoJSON(rt.geometry,{style:{color:'#087fdb',weight:6,opacity:.9}}).addTo(map);
-  map.fitBounds(routeLine.getBounds(),{padding:[25,25]});
-  $('distance').textContent=fmtDistance(rt.distance);
-  const mins=Math.round(rt.duration/60);
-  status('Route ready: '+fmtDistance(rt.distance)+', estimated '+(mins<60?mins+' min':Math.floor(mins/60)+' h '+(mins%60)+' min')+'. This is a route preview, not voice-guided navigation.');
- }catch(e){status('Could not calculate route: '+e.message+'. Try another destination later.')}
-}
-$('locateBtn').addEventListener('click',locate);
-$('searchBtn').addEventListener('click',searchPlace);
-$('routeBtn').addEventListener('click',getRoute);
-$('destination').addEventListener('keydown',e=>{if(e.key==='Enter')searchPlace()});
+let currentPosition=null, tracks=[], trackIndex=0;
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===id));window.scrollTo({top:0,behavior:'smooth'});}
+function getLocation(){const a=document.getElementById('locationStatus'),b=document.getElementById('mapLocation');if(!navigator.geolocation){a.textContent=b.textContent='This browser does not support phone location.';return;}a.textContent=b.textContent='Requesting location permission…';navigator.geolocation.getCurrentPosition(p=>{currentPosition={lat:p.coords.latitude,lon:p.coords.longitude};const msg='Current location: '+currentPosition.lat.toFixed(5)+', '+currentPosition.lon.toFixed(5);a.textContent=b.textContent=msg;},e=>{const msg=e.code===1?'Location permission was denied. Allow location access in your browser settings.':e.code===2?'Phone location is unavailable. Check location services.':'Location request timed out. Try again.';a.textContent=b.textContent=msg;},{enableHighAccuracy:true,timeout:15000,maximumAge:10000});}
+function navigate(){const dest=document.getElementById('destination').value.trim();if(!dest){document.getElementById('destination').focus();alert('Enter a destination first.');return;}let url='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(dest)+'&travelmode=driving';if(currentPosition)url+='&origin='+encodeURIComponent(currentPosition.lat+','+currentPosition.lon);window.location.href=url;}
+document.getElementById('audioFiles').addEventListener('change',e=>{tracks=Array.from(e.target.files||[]);trackIndex=0;const select=document.getElementById('trackList');select.innerHTML='<option value="">Choose a track</option>';tracks.forEach((t,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=t.name;select.appendChild(o)});if(tracks.length){select.value='0';loadTrack(0);document.getElementById('musicStatus').textContent=tracks.length+' track(s) ready on this phone.'}else{document.getElementById('musicStatus').textContent='No local tracks selected.'}});
+document.getElementById('trackList').addEventListener('change',e=>{if(e.target.value!==''){loadTrack(Number(e.target.value));}});
+function loadTrack(i){if(!tracks.length)return;trackIndex=(i+tracks.length)%tracks.length;const player=document.getElementById('player');if(player.dataset.objectUrl)URL.revokeObjectURL(player.dataset.objectUrl);const u=URL.createObjectURL(tracks[trackIndex]);player.src=u;player.dataset.objectUrl=u;document.getElementById('trackList').value=String(trackIndex);document.getElementById('musicStatus').textContent='Selected: '+tracks[trackIndex].name;}
+function playTrack(){if(!tracks.length){document.getElementById('musicStatus').textContent='Choose audio files from your phone first.';return;}const p=document.getElementById('player');if(!p.src)loadTrack(trackIndex);p.play().catch(()=>{document.getElementById('musicStatus').textContent='Tap the player’s play button to start audio.';});}
+function previousTrack(){if(tracks.length){loadTrack(trackIndex-1);playTrack();}}
+function nextTrack(){if(tracks.length){loadTrack(trackIndex+1);playTrack();}}
+document.getElementById('player').addEventListener('ended',()=>{if(tracks.length)nextTrack();});
 </script>
-</body></html>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#101820">
+<title>Velocity GPS</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--bg:#101820;--panel:#182631;--line:#2c414e;--accent:#4de1c1;--text:#f4f7f8;--muted:#a9bac3}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:15px 16px 12px;background:#101820;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+.brand{font-weight:850;font-size:20px;letter-spacing:.4px}.brand span{color:var(--accent)}.tag{font-size:11px;color:var(--muted)}
+#map{height:53vh;min-height:300px;width:100%;background:#263642}
+main{padding:12px;max-width:800px;margin:auto}.searchrow{display:flex;gap:8px;margin-bottom:8px}
+input{min-width:0;flex:1;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:13px;font-size:15px;outline:none}
+button{border:0;border-radius:12px;padding:12px 14px;background:var(--accent);color:#09201c;font-weight:800;font-size:14px;cursor:pointer}
+button.secondary{background:#263a46;color:var(--text);border:1px solid var(--line)}button:disabled{opacity:.45}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.status{padding:10px 12px;border:1px solid var(--line);background:var(--panel);border-radius:12px;color:var(--muted);font-size:13px;line-height:1.4}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+.stat{background:var(--panel);border:1px solid var(--line);padding:11px;border-radius:12px;min-width:0}
+.stat small{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px}.stat strong{font-size:19px}
+footer{color:var(--muted);font-size:11px;line-height:1.45;padding:12px 2px}
+.leaflet-control-attribution{font-size:9px!important}
+@media(min-width:700px){#map{height:55vh}.layout{display:grid;grid-template-columns:1.4fr 1fr;gap:12px}#map{border-radius:14px}.panel{align-self:start}}
+</style>
+</head>
+<body>
+<header><div><div class="brand">VELOCITY <span>GPS</span></div><div class="tag">YOUR MAP. YOUR ROUTE.</div></div><div class="tag">BETA 0.1</div></header>
+<div id="map" aria-label="GPS map"></div>
+<main>
+<div class="searchrow"><input id="destination" placeholder="Search a place or address" autocomplete="off"><button id="searchBtn">Find</button></div>
+<div class="actions"><button id="locateBtn">◎ My location</button><button id="routeBtn" class="secondary" disabled>↗ Route there</button></div>
+<div class="layout"><div class="panel">
+<div class="stats">
+<div class="stat"><small>Speed</small><strong id="speed">—</strong></div>
+<div class="stat"><small>Accuracy</small><strong id="accuracy">—</strong></div>
+<div class="stat"><small>Route</small><strong id="distance">—</strong></div>
+</div>
+<div id="status" class="status" role="status">Map ready. Tap “My location” and allow location access to test GPS.</div>
+</div><div class="panel"><footer><b>Prototype notes</b><br>Map data © OpenStreetMap contributors. Search uses OpenStreetMap Nominatim; routes use the public OSRM demo service. These public services have usage limits and are not a guaranteed production backend. GPS requires permission and a secure HTTPS page. Never use this prototype as your sole navigation source while driving.</footer></div></div>
+</main>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const statusEl=$('status');
+const map=L.map('map').setView([39.0997,-94.5786],11);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map);
+let userMarker=null, destMarker=null, routeLine=null, userPos=null, destination=null, watchId=null, lastSpeed=0;
+function status(msg){statusEl.textContent=msg}
+function fmtDistance(m){return m>=1000?(m/1000).toFixed(1)+' km':Math.round(m)+' m'}
+function showPosition(p){
+ userPos=[p.coords.latitude,p.coords.longitude];
+ const acc=p.coords.accuracy;
+ $('accuracy').textContent=acc?Math.round(acc)+' m':'—';
+ const s=p.coords.speed;
+ $('speed').textContent=(s!=null&&s>=0)?Math.round(s*3.6)+' km/h':'—';
+ if(!userMarker){userMarker=L.circleMarker(userPos,{radius:9,color:'#ffffff',weight:3,fillColor:'#4de1c1',fillOpacity:1}).addTo(map).bindPopup('Your current location')}
+ else userMarker.setLatLng(userPos);
+ if(!destination) map.setView(userPos,16);
+ status('GPS location updated. Accuracy about '+Math.round(acc)+' meters.');
+}
+function locate(){
+ if(!navigator.geolocation){status('This browser does not support GPS location. Try Chrome on Android.');return}
+ status('Requesting GPS permission…');
+ navigator.geolocation.getCurrentPosition(p=>{showPosition(p);map.setView(userPos,16);userMarker.openPopup();
+  if(watchId===null){watchId=navigator.geolocation.watchPosition(showPosition,e=>status('GPS update issue: '+e.message),{enableHighAccuracy:true,maximumAge:3000,timeout:15000})}
+ },e=>{status('Could not get location: '+e.message+'. Check browser location permission and make sure this page is served over HTTPS.')},{enableHighAccuracy:true,maximumAge:0,timeout:15000});
+}
+async function searchPlace(){
+ const q=$('destination').value.trim();if(!q){status('Type a place or address first.');return}
+ status('Searching OpenStreetMap…');
+ try{
+  const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(q),{headers:{'Accept':'application/json'}});
+  if(!r.ok)throw new Error('Search service unavailable');
+  const data=await r.json();if(!data.length){status('No result found. Try a fuller address or nearby landmark.');return}
+  destination=[Number(data[0].lat),Number(data[0].lon)];
+  if(destMarker)map.removeLayer(destMarker);
+  destMarker=L.marker(destination).addTo(map).bindPopup(data[0].display_name);
+  map.setView(destination,14);destMarker.openPopup();$('routeBtn').disabled=false;
+  status('Found: '+data[0].display_name+'. Tap “Route there” to calculate a route.');
+ }catch(e){status('Search failed: '+e.message+'. Check your internet connection and try again.')}
+}
+async function getRoute(){
+ if(!userPos){status('Get your GPS location first.');return}
+ if(!destination){status('Search for a destination first.');return}
+ status('Calculating route…');
+ try{
+  const coords=userPos[1]+','+userPos[0]+';'+destination[1]+','+destination[0];
+  const r=await fetch('https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson&steps=true');
+  if(!r.ok)throw new Error('Routing service unavailable');
+  const d=await r.json();if(!d.routes||!d.routes.length)throw new Error('No driving route found');
+  const rt=d.routes[0];
+  if(routeLine)map.removeLayer(routeLine);
+  routeLine=L.geoJSON(rt.geometry,{style:{color:'#087fdb',weight:6,opacity:.9}}).addTo(map);
+  map.fitBounds(routeLine.getBounds(),{padding:[25,25]});
+  $('distance').textContent=fmtDistance(rt.distance);
+  const mins=Math.round(rt.duration/60);
+  status('Route ready: '+fmtDistance(rt.distance)+', estimated '+(mins<60?mins+' min':Math.floor(mins/60)+' h '+(mins%60)+' min')+'. This is a route preview, not voice-guided navigation.');
+ }catch(e){status('Could not calculate route: '+e.message+'. Try another destination later.')}
+}
+$('locateBtn').addEventListener('click',locate);
+$('searchBtn').addEventListener('click',searchPlace);
+$('routeBtn').addEventListener('click',getRoute);
+$('destination').addEventListener('keydown',e=>{if(e.key==='Enter')searchPlace()});
+</script>
+</body></html>

@@ -1,0 +1,8 @@
+{
+  "appId": "com.velocitygps.usm",
+  "appName": "USM - Velocity GPS",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}

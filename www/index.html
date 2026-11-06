@@ -5,7 +5,7 @@
 <meta name="theme-color" content="#080808"><title>USM — Velocity GPS</title>
 <style>
 :root{color-scheme:dark;--bg:#080808;--panel:#171717;--panel2:#242424;--red:#d71935;--red2:#8e1024;--text:#fff;--muted:#c7c0c2;--line:#5a1724;--brightness:1}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+*{box-sizing:border-box}body{margin:0;background-color:var(--bg);background-image:repeating-conic-gradient(color-mix(in srgb,var(--red) 18%,var(--bg)) 0% 25%,var(--bg) 0% 50%);background-size:42px 42px;background-attachment:fixed;color:var(--text);font:15px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
 #app{filter:brightness(var(--brightness));min-height:100vh}
 header{position:sticky;top:0;z-index:4;padding:calc(13px + env(safe-area-inset-top)) 16px 12px;background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:10px}.brandmark{font-size:27px;color:#fff;text-shadow:0 0 10px var(--red)}h1{font-size:19px;margin:0;letter-spacing:.5px}.sub{font-size:10px;letter-spacing:2px;color:var(--muted);margin-top:2px}
@@ -19,7 +19,7 @@ body[data-theme="mono"] .hero{background:repeating-conic-gradient(#555 0% 25%,#1
 body[data-theme="wine"] .hero{background:repeating-conic-gradient(#8d1235 0% 25%,#170b11 0% 50%) 50%/30px 30px}
 </style></head>
 <body data-theme="checker"><div id="app">
-<header><div class="brand"><div class="brandmark">❀</div><div><h1>USM · Velocity GPS</h1><div class="sub">FIND YOUR WAY · KEEP YOUR STYLE</div></div></div></header>
+<header><div class="brand"><div class="brandmark">❀</div><div><h1>Tea · Velocity GPS</h1><div class="sub">FIND YOUR WAY · KEEP YOUR STYLE</div></div></div></header>
 <main>
 <section class="view active" id="home"><div class="hero"><div class="eyebrow">Your route. Your rhythm.</div><h2>Move your way.</h2><p>Simple navigation and music, wrapped in your own style.</p></div>
 <div class="panel"><h3>📍 Quick navigation</h3><p class="muted">Use your phone location and open turn-by-turn directions in Google Maps.</p><button class="btn" onclick="getLocation()">Use my current location</button><div class="status" id="locationStatus">Location not checked yet.</div><button class="btn secondary" onclick="showView('map')">Open map tools</button></div>
@@ -33,7 +33,7 @@ body[data-theme="wine"] .hero{background:repeating-conic-gradient(#8d1235 0% 25%
 <button class="theme-choice" onclick="applyTheme('mono')"><div class="swatch" style="background:#555"></div>Black & silver</button></div>
 <label for="customName">Create your own theme</label><input class="field" id="customName" maxlength="24" placeholder="Theme name"><label for="customBg">Background color</label><input class="field" id="customBg" type="color" value="#080808"><label for="customPanel">Panel color</label><input class="field" id="customPanel" type="color" value="#171717"><label for="customAccent">Accent color</label><input class="field" id="customAccent" type="color" value="#d71935"><label for="customText">Text color</label><input class="field" id="customText" type="color" value="#ffffff"><button class="btn" onclick="saveCustomTheme()">Save my theme</button><div id="customThemes"></div><div class="status" id="settingsStatus">Your appearance settings are saved on this phone.</div></div></section>
 </main>
-<nav class="tabs" aria-label="Main navigation"><button class="tab active" data-view="home" onclick="showView('home')"><span>⌂</span>Home</button><button class="tab" data-view="map" onclick="showView('map')"><span>⌖</span>Maps</button><button class="tab" data-view="music" onclick="showView('music')"><span>♫</span>Music</button><button class="tab" data-view="settings" onclick="showView('settings')"><span>⚙</span>Settings</button></nav></div>
+<nav class="tabs" aria-label="Main navigation"><button class="tab active" data-view="home" onclick="showView('home')"><span>⌂</span>Tea</button><button class="tab" data-view="map" onclick="showView('map')"><span>⌖</span>Maps</button><button class="tab" data-view="music" onclick="showView('music')"><span>♫</span>Music</button><button class="tab" data-view="settings" onclick="showView('settings')"><span>⚙</span>Settings</button></nav></div>
 <script>
 let currentPosition=null,tracks=[],trackIndex=0,customThemes=[];
 function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===id));window.scrollTo({top:0,behavior:'smooth'});}
